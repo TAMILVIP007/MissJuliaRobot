@@ -69,9 +69,7 @@ async def start(event):
     if event.is_group:
         if await is_register_admin(event.input_chat, event.message.sender_id):
             pass
-        elif event.chat_id == iid and event.sender_id == userss:
-            pass
-        else:
+        elif event.chat_id != iid or event.sender_id != userss:
             return
 
     if not event.is_group:
@@ -157,9 +155,7 @@ async def help(event):
     if event.is_group:
         if await is_register_admin(event.input_chat, event.message.sender_id):
             pass
-        elif event.chat_id == iid and event.sender_id == userss:
-            pass
-        else:
+        elif event.chat_id != iid or event.sender_id != userss:
             return
     if not event.is_group:
         buttons = paginate_help(event, 0, CMD_LIST, "helpme")
@@ -180,9 +176,7 @@ async def help(event):
     if event.is_group:
         if await is_register_admin(event.input_chat, event.message.sender_id):
             pass
-        elif event.chat_id == iid and event.sender_id == userss:
-            pass
-        else:
+        elif event.chat_id != iid or event.sender_id != userss:
             return
     if not event.is_group:
         buttons = paginate_help(event, 0, CMD_LIST, "helpme")
@@ -226,9 +220,7 @@ async def on_plug_in_callback_query_handler(event):
         output = str(CMD_HELP[plugin][1])
         help_string = f"Here is the help for **{emoji}**:\n" + output
 
-    if help_string is None:
-        pass  # stuck on click
-    else:
+    if help_string is not None:
         reply_pop_up_alert = help_string
     try:
         await event.edit(
@@ -263,12 +255,7 @@ def paginate_help(event, page_number, loaded_plugins, prefix):
     number_of_rows = 3
     number_of_cols = 2
 
-    to_check = get_page(id=event.sender_id)
-
-    if not to_check:
-        pagenumber.insert_one({"id": event.sender_id, "page": page_number})
-
-    else:
+    if to_check := get_page(id=event.sender_id):
         pagenumber.update_one(
             {
                 "_id": to_check["_id"],
@@ -278,10 +265,10 @@ def paginate_help(event, page_number, loaded_plugins, prefix):
             {"$set": {"page": page_number}},
         )
 
-    helpable_plugins = []
-    for p in loaded_plugins:
-        if not p.startswith("_"):
-            helpable_plugins.append(p)
+    else:
+        pagenumber.insert_one({"id": event.sender_id, "page": page_number})
+
+    helpable_plugins = [p for p in loaded_plugins if not p.startswith("_")]
     helpable_plugins = sorted(helpable_plugins)
     modules = [
         custom.Button.inline(

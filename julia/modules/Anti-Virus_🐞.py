@@ -66,9 +66,7 @@ async def virusscan(event):
     if event.is_group:
         if await is_register_admin(event.input_chat, event.message.sender_id):
             pass
-        elif event.chat_id == iid and event.sender_id == userss:
-            pass
-        else:
+        elif event.chat_id != iid or event.sender_id != userss:
             return
     if not event.reply_to_msg_id:
         await event.reply("Reply to a file to scan it.")
@@ -97,7 +95,7 @@ async def virusscan(event):
         await event.client.download_file(c, virus)
         gg = await event.reply("Scanning the file ...")
         fsize = c.file.size
-        if not fsize <= 3145700:  # MAX = 3MB
+        if fsize > 3145700:  # MAX = 3MB
             await gg.edit("File size exceeds 3MB")
             return
         api_response = api_instance.scan_file_advanced(

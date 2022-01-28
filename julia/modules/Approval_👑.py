@@ -92,16 +92,14 @@ async def approve(event):
     reply_msg = await event.get_reply_message()
     approved_userss = approved_users.find({})
 
-    if event.is_group:
-        if not await can_approve_users(message=event):
-            return
-    else:
+    if (
+        event.is_group
+        and not await can_approve_users(message=event)
+        or not event.is_group
+    ):
         return
-
     userr = await get_user_from_event(event)
-    if userr:
-        pass
-    else:
+    if not userr:
         return
     iid = userr.id
 
@@ -140,16 +138,14 @@ async def disapprove(event):
     reply_msg = await event.get_reply_message()
     approved_userss = approved_users.find({})
 
-    if event.is_group:
-        if not await can_approve_users(message=event):
-            return
-    else:
+    if (
+        event.is_group
+        and not await can_approve_users(message=event)
+        or not event.is_group
+    ):
         return
-
     userr = await get_user_from_event(event)
-    if userr:
-        pass
-    else:
+    if not userr:
         return
     iid = userr.id
 
@@ -187,16 +183,13 @@ async def checkst(event):
     reply_msg = await event.get_reply_message()
     approved_userss = approved_users.find({})
 
-    if event.is_group:
-        if not await can_approve_users(message=event):
-            return
-    else:
+    if not event.is_group:
         return
 
+    if not await can_approve_users(message=event):
+        return
     userr = await get_user_from_event(event)
-    if userr:
-        pass
-    else:
+    if not userr:
         return
     iid = userr.id
 
@@ -228,12 +221,11 @@ async def apprlst(event):
     sender = event.sender_id
     reply_msg = await event.get_reply_message()
 
-    if event.is_group:
-        if not await can_approve_users(message=event):
-            return
-    else:
+    if not event.is_group:
         return
 
+    if not await can_approve_users(message=event):
+        return
     autos = approved_users.find({})
     pp = ""
     for i in autos:
@@ -265,10 +257,9 @@ async def disapprlst(event):
     sender = event.sender_id
     reply_msg = await event.get_reply_message()
 
-    if event.is_group:
-        if not await can_approve_users(message=event):
-            return
-    else:
+    if not event.is_group:
+        return
+    if not await can_approve_users(message=event):
         return
     autos = approved_users.find({})
     for i in autos:

@@ -55,9 +55,7 @@ async def asciiart(event):
     if event.is_group:
         if await is_register_admin(event.input_chat, event.message.sender_id):
             pass
-        elif event.chat_id == iid and event.sender_id == userss:
-            pass
-        else:
+        elif event.chat_id != iid or event.sender_id != userss:
             return
     reply_msg = await event.get_reply_message()
     downloaded_file_name = await tbot.download_media(reply_msg, "prevscan.jpg")

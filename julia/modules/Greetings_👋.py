@@ -87,8 +87,7 @@ global butto
 @tbot.on(events.ChatAction())  # pylint:disable=E0602
 async def _(event):
     try:
-        cws = get_current_welcome_settings(event.chat_id)
-        if cws:
+        if cws := get_current_welcome_settings(event.chat_id):
             if event.user_joined:
                 if cws.should_clean_welcome:
                     try:
@@ -100,24 +99,20 @@ async def _(event):
                 a_user = await event.get_user()
                 chat = await event.get_chat()
                 me = await tbot.get_me()
-                title = chat.title if chat.title else "this chat"
+                title = chat.title or "this chat"
                 participants = await event.client.get_participants(chat)
                 count = len(participants)
                 mention = "[{}](tg://user?id={})".format(a_user.first_name, a_user.id)
                 first = a_user.first_name
                 last = a_user.last_name
-                if last:
-                    fullname = f"{first} {last}"
-                else:
-                    fullname = first
+                fullname = f"{first} {last}" if last else first
                 username = (
                     f"@{me.username}" if me.username else f"[Me](tg://user?id={me.id})"
                 )
                 userid = a_user.id
                 current_saved_welcome_message = cws.custom_welcome_message
                 mention = "[{}](tg://user?id={})".format(a_user.first_name, a_user.id)
-                rules = sql.get_rules(event.chat_id)
-                if rules:
+                if rules := sql.get_rules(event.chat_id):
                     chats = botcheck.find({})
                     for c in chats:
                         if event.chat_id == c["id"]:
@@ -497,62 +492,58 @@ async def _(event):
 
 @tbot.on(events.ChatAction())  # pylint:disable=E0602
 async def _(event):
-    # print("yo")
-    cws = get_current_goodbye_settings(event.chat_id)
-    if cws:
-        # print("gotcha")
-        # print(event.stringify())
-        """user_added=False,
+    if not (cws := get_current_goodbye_settings(event.chat_id)):
+        return
+    # print("gotcha")
+    # print(event.stringify())
+    """user_added=False,
         user_joined=False,
         user_left=True,
         user_kicked=True,"""
-        if event.user_kicked or event.user_left:
-            # print ("1")
-            if cws.should_clean_goodbye:
-                # print ("2")
-                try:
-                    await tbot.delete_messages(  # pylint:disable=E0602
-                        event.chat_id, cws.previous_goodbye
-                    )
-                except Exception as e:  # pylint:disable=C0103,W0703
-                    print(e)  # pylint:disable=E0602
-            # print ("3")
-            a_user = await event.get_user()
-            chat = await event.get_chat()
-            me = await tbot.get_me()
+    if event.user_kicked or event.user_left:
+        # print ("1")
+        if cws.should_clean_goodbye:
+            # print ("2")
+            try:
+                await tbot.delete_messages(  # pylint:disable=E0602
+                    event.chat_id, cws.previous_goodbye
+                )
+            except Exception as e:  # pylint:disable=C0103,W0703
+                print(e)  # pylint:disable=E0602
+        # print ("3")
+        a_user = await event.get_user()
+        chat = await event.get_chat()
+        me = await tbot.get_me()
 
-            title = chat.title if chat.title else "this chat"
-            participants = await event.client.get_participants(chat)
-            count = len(participants)
-            mention = "[{}](tg://user?id={})".format(a_user.first_name, a_user.id)
-            first = a_user.first_name
-            last = a_user.last_name
-            if last:
-                fullname = f"{first} {last}"
-            else:
-                fullname = first
-            username = (
-                f"@{me.username}" if me.username else f"[Me](tg://user?id={me.id})"
-            )
-            userid = a_user.id
-            current_saved_goodbye_message = cws.custom_goodbye_message
-            mention = "[{}](tg://user?id={})".format(a_user.first_name, a_user.id)
-            # print(current_saved_goodbye_message)
-            current_message = await event.reply(
-                current_saved_goodbye_message.format(
-                    mention=mention,
-                    title=title,
-                    count=count,
-                    first=first,
-                    last=last,
-                    fullname=fullname,
-                    username=username,
-                    userid=userid,
-                ),
-                file=cws.media_file_id,
-            )
-            # print (current_message)
-            update_previous_goodbye(event.chat_id, current_message.id)
+        title = chat.title or "this chat"
+        participants = await event.client.get_participants(chat)
+        count = len(participants)
+        mention = "[{}](tg://user?id={})".format(a_user.first_name, a_user.id)
+        first = a_user.first_name
+        last = a_user.last_name
+        fullname = f"{first} {last}" if last else first
+        username = (
+            f"@{me.username}" if me.username else f"[Me](tg://user?id={me.id})"
+        )
+        userid = a_user.id
+        current_saved_goodbye_message = cws.custom_goodbye_message
+        mention = "[{}](tg://user?id={})".format(a_user.first_name, a_user.id)
+        # print(current_saved_goodbye_message)
+        current_message = await event.reply(
+            current_saved_goodbye_message.format(
+                mention=mention,
+                title=title,
+                count=count,
+                first=first,
+                last=last,
+                fullname=fullname,
+                username=username,
+                userid=userid,
+            ),
+            file=cws.media_file_id,
+        )
+        # print (current_message)
+        update_previous_goodbye(event.chat_id, current_message.id)
 
 
 # -- @MissJulia_Robot (sassiet captcha ever) --#
@@ -563,7 +554,7 @@ async def rules_st(event):
     rules = sql.get_rules(event.chat_id)
     # print(rules)
     user_id = int(event.pattern_match.group(1))
-    if not event.sender_id == user_id:
+    if event.sender_id != user_id:
         await event.answer("You aren't a new user!")
         return
     text = f"The rules for **{event.chat.title}** are:\n\n{rules}"
@@ -587,7 +578,7 @@ async def cbot(event):
     user_id = int(event.pattern_match.group(1))
     chat_id = event.chat_id
     chat_title = event.chat.title
-    if not event.sender_id == user_id:
+    if event.sender_id != user_id:
         await event.answer("You aren't the person whom should be verified.")
         return
     for c in chats:

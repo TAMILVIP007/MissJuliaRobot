@@ -155,9 +155,8 @@ async def _(event):
 async def _(event):
     if event.is_private:
         return
-    if event.is_group:
-        if not await can_change_info(message=event):
-            return
+    if event.is_group and not await can_change_info(message=event):
+        return
     chat_id = event.chat_id
     args = event.pattern_match.group(1)
     if not args:
@@ -197,9 +196,8 @@ async def _(event):
 async def _(event):
     if event.is_private:
         return
-    if event.is_group:
-        if not await can_change_info(message=event):
-            return
+    if event.is_group and not await can_change_info(message=event):
+        return
     chat_id = event.chat_id
     limit = sql.get_flood_limit(chat_id)
     if limit == 0:
@@ -217,9 +215,8 @@ async def _(event):
     try:
         if event.is_private:
             return
-        if event.is_group:
-            if not await can_change_info(message=event):
-                return
+        if event.is_group and not await can_change_info(message=event):
+            return
         chat_id = event.chat_id
         args = event.pattern_match.group(1)
         time = args.split()

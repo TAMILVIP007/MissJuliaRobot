@@ -97,12 +97,10 @@ async def can_change_info(message):
 async def _(event):
     if event.is_private:
         return
-    if event.is_group:
-        if not await can_change_info(message=event):
-            return
+    if event.is_group and not await can_change_info(message=event):
+        return
     chat = event.chat_id
-    args = event.pattern_match.group(1)
-    if args:
+    if args := event.pattern_match.group(1):
         if args == "on":
             sql.set_chat_setting(chat, True)
             await event.reply(
@@ -203,9 +201,7 @@ async def _(event):
             event.chat_id, filter=ChannelParticipantsAdmins
         ):
             try:
-                if userr.bot:
-                    pass
-                else:
+                if not userr.bot:
                     await tbot.send_message(
                         userr.id, msg, buttons=buttons, parse_mode="html"
                     )

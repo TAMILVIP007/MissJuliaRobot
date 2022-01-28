@@ -68,11 +68,13 @@ async def youtube_search(
         .execute()
     )
 
-    videos = []
+    videos = [
+        search_result
+        for search_result in search_response.get("items", [])
+        if search_result["id"]["kind"] == "youtube#video"
+    ]
 
-    for search_result in search_response.get("items", []):
-        if search_result["id"]["kind"] == "youtube#video":
-            videos.append(search_result)
+
     try:
         nexttok = search_response["nextPageToken"]
         return (nexttok, videos)
@@ -94,9 +96,7 @@ async def yts_search(video_q):
     if video_q.is_group:
         if await is_register_admin(video_q.input_chat, video_q.message.sender_id):
             pass
-        elif video_q.chat_id == iid and video_q.sender_id == userss:
-            pass
-        else:
+        elif video_q.chat_id != iid or video_q.sender_id != userss:
             return
 
     # For /yts command, do a YouTube search from Telegram.
@@ -131,9 +131,7 @@ async def yts_search(video_q):
     if video_q.is_group:
         if await is_register_admin(video_q.input_chat, video_q.message.sender_id):
             pass
-        elif video_q.chat_id == iid and video_q.sender_id == userss:
-            pass
-        else:
+        elif video_q.chat_id != iid or video_q.sender_id != userss:
             return
     query = video_q.pattern_match.group(1)
     if not query.startswith("https://youtu.be/"):

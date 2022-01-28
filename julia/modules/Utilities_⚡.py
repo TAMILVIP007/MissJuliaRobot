@@ -73,9 +73,7 @@ async def who(event):
     if event.is_group:
         if await is_register_admin(event.input_chat, event.message.sender_id):
             pass
-        elif event.chat_id == iid and event.sender.id == userss:
-            pass
-        else:
+        elif event.chat_id != iid or event.sender.id != userss:
             return
 
     if not os.path.isdir(TMP_DOWNLOAD_DIRECTORY):
@@ -205,7 +203,7 @@ async def fetch_info(replied_user, event):
         users = gbanned.find({})
         for fuckers in users:
             gid = fuckers["user"]
-        if not user_id in SUDO_USERS and not user_id == OWNER_ID:
+        if user_id not in SUDO_USERS and user_id != OWNER_ID:
             if str(user_id) == str(gid):
                 caption += "<b>Gbanned:</b> Yes\n"
                 to_check = get_reason(id=user_id)
@@ -250,9 +248,7 @@ async def useridgetter(target):
     if target.is_group:
         if await is_register_admin(target.input_chat, target.message.sender_id):
             pass
-        elif target.chat_id == iid and target.sender_id == userss:
-            pass
-        else:
+        elif target.chat_id != iid or target.sender_id != userss:
             return
     message = await target.get_reply_message()
     if not message:
@@ -289,9 +285,7 @@ async def chatidgetter(chat):
     if chat.is_group:
         if await is_register_admin(chat.input_chat, chat.message.sender_id):
             pass
-        elif chat.chat_id == iid and chat.sender_id == userss:
-            pass
-        else:
+        elif chat.chat_id != iid or chat.sender_id != userss:
             return
     await chat.reply("Chat ID: `" + str(chat.chat_id) + "`")
 
@@ -330,10 +324,7 @@ def get_readable_time(seconds: int) -> str:
 
     while count < 4:
         count += 1
-        if count < 3:
-            remainder, result = divmod(seconds, 60)
-        else:
-            remainder, result = divmod(seconds, 24)
+        remainder, result = divmod(seconds, 60) if count < 3 else divmod(seconds, 24)
         if seconds == 0 and remainder == 0:
             break
         time_list.append(int(result))
@@ -377,10 +368,7 @@ async def _(event):
     if int(check) != int(OWNER_ID):
         return
     cmd = event.text.split(" ", maxsplit=1)[1]
-    reply_to_id = event.message.id
-    if event.reply_to_msg_id:
-        reply_to_id = event.reply_to_msg_id
-
+    reply_to_id = event.reply_to_msg_id or event.message.id
     old_stderr = sys.stderr
     old_stdout = sys.stdout
     redirected_output = sys.stdout = io.StringIO()
@@ -448,10 +436,7 @@ async def _(event):
     if int(check) != int(OWNER_ID):
         return
     cmd = event.text.split(" ", maxsplit=1)[1]
-    reply_to_id = event.message.id
-    if event.reply_to_msg_id:
-        reply_to_id = event.reply_to_msg_id
-
+    reply_to_id = event.reply_to_msg_id or event.message.id
     old_stderr = sys.stderr
     old_stdout = sys.stdout
     redirected_output = sys.stdout = io.StringIO()

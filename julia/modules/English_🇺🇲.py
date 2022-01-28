@@ -58,9 +58,7 @@ async def _(event):
     if event.is_group:
         if await is_register_admin(event.input_chat, event.message.sender_id):
             pass
-        elif event.chat_id == iid and event.sender_id == userss:
-            pass
-        else:
+        elif event.chat_id != iid or event.sender_id != userss:
             return
     input_str = event.pattern_match.group(1)
     if event.reply_to_msg_id:
@@ -102,9 +100,7 @@ async def _(event):
     if event.is_group:
         if await is_register_admin(event.input_chat, event.message.sender_id):
             pass
-        elif event.chat_id == iid and event.sender_id == userss:
-            pass
-        else:
+        elif event.chat_id != iid or event.sender_id != userss:
             return
     ctext = await event.get_reply_message()
     msg = ctext.text
@@ -119,8 +115,7 @@ async def _(event):
     for change in changes:
         start = change.get("From")
         end = change.get("To") + 1
-        suggestions = change.get("Suggestions")
-        if suggestions:
+        if suggestions := change.get("Suggestions"):
             sugg_str = suggestions[0].get("Text")
             curr_string += msg[prev_end:start] + sugg_str
             prev_end = end
@@ -141,9 +136,7 @@ async def _(event):
     if event.is_group:
         if await is_register_admin(event.input_chat, event.message.sender_id):
             pass
-        elif event.chat_id == iid and event.sender_id == userss:
-            pass
-        else:
+        elif event.chat_id != iid or event.sender_id != userss:
             return
     text = event.text[len("/define ") :]
     word = f"{text}"
@@ -164,9 +157,7 @@ async def _(event):
     if event.is_group:
         if await is_register_admin(event.input_chat, event.message.sender_id):
             pass
-        elif event.chat_id == iid and event.sender_id == userss:
-            pass
-        else:
+        elif event.chat_id != iid or event.sender_id != userss:
             return
     text = event.text[len("/synonyms ") :]
     word = f"{text}"
@@ -187,9 +178,7 @@ async def _(event):
     if event.is_group:
         if await is_register_admin(event.input_chat, event.message.sender_id):
             pass
-        elif event.chat_id == iid and event.sender_id == userss:
-            pass
-        else:
+        elif event.chat_id != iid or event.sender_id != userss:
             return
     text = message.text[len("/antonyms ") :]
     word = f"{text}"
