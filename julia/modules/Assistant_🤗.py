@@ -62,19 +62,17 @@ async def _(event):
     if event.is_group:
         if await is_register_admin(event.input_chat, event.message.sender_id):
             pass
-        elif event.chat_id == iid and event.sender_id == userss:
-            pass
-        else:
+        elif event.chat_id != iid or event.sender_id != userss:
             return
     if not event.reply_to_msg_id:
         i = event.pattern_match.group(1)
         appid = WOLFRAM_ID
         server = f"https://api.wolframalpha.com/v1/spoken?appid={appid}&i={i}"
         res = get(server)
-        if (
-            res.text == "Wolfram Alpha did not understand your input"
-            or res.text == "No spoken result available"
-        ):
+        if res.text in [
+            "Wolfram Alpha did not understand your input",
+            "No spoken result available",
+        ]:
             await event.reply("Sorry I can't understand")
             return
         await event.reply(f"**{i}**\n\n" + res.text, parse_mode="markdown")
@@ -114,19 +112,15 @@ async def _(event):
                     server = f"https://api.wolframalpha.com/v1/spoken?appid={appid}&i={string_to_show}"
                     res = get(server)
                     answer = res.text
-                    if (
-                        answer == "Wolfram Alpha did not understand your input"
-                        or answer == "No spoken result available"
-                    ):
+                    if answer in [
+                        "Wolfram Alpha did not understand your input",
+                        "No spoken result available",
+                    ]:
                         answer = "Sorry I can't understand"
                     try:
                         tts = gTTS(answer, tld="com", lang="en")
                         tts.save("results.mp3")
-                    except AssertionError:
-                        return
-                    except ValueError:
-                        return
-                    except RuntimeError:
+                    except (AssertionError, ValueError, RuntimeError):
                         return
                     except gTTSError:
                         return
@@ -155,9 +149,7 @@ async def howdoi(event):
     if event.is_group:
         if await is_register_admin(event.input_chat, event.message.sender_id):
             pass
-        elif event.chat_id == iid and event.sender_id == userss:
-            pass
-        else:
+        elif event.chat_id != iid or event.sender_id != userss:
             return
 
     str = event.pattern_match.group(1)

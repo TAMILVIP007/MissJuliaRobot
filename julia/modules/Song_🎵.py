@@ -69,9 +69,7 @@ async def download_song(v_url):
         if v_url.is_group:
             if await is_register_admin(v_url.input_chat, v_url.message.sender_id):
                 pass
-            elif v_url.chat_id == iid and v_url.sender_id == userss:
-                pass
-            else:
+            elif v_url.chat_id != iid or v_url.sender_id != userss:
                 return
         url = v_url.pattern_match.group(1)
         rkp = await v_url.reply("`Processing ...`")
@@ -114,7 +112,7 @@ async def download_song(v_url):
             with YoutubeDL(opts) as rip:
                 rip_data = rip.extract_info(url)
         except DownloadError as DE:
-            await rkp.edit(f"`{str(DE)}`")
+            await rkp.edit(f'`{DE}`')
             return
         except ContentTooShortError:
             await rkp.edit("`The download content was too short.`")
@@ -140,11 +138,11 @@ async def download_song(v_url):
             await rkp.edit("`There was an error during info extraction.`")
             return
         except Exception as e:
-            await rkp.edit(f"{str(type(e)): {str(e)}}")
+            await rkp.edit(f'{str(type(e)): {e}}')
             return
-        c_time = time.time()
         if song:
-            await rkp.edit(f"`Sending the song ...`")
+            c_time = time.time()
+            await rkp.edit('`Sending the song ...`')
             y = await v_url.client.send_file(
                 v_url.chat_id,
                 f"{rip_data['id']}.mp3",
@@ -160,22 +158,22 @@ async def download_song(v_url):
                 ],
             )
             songname = str(rip_data["title"])
-            if JULIASONG:
-                pass
-            else:
+            if not JULIASONG:
                 os.system("rm -rf *.mp3")
                 os.system("rm -rf *.webp")
                 os.system("rm -rf *.jpg")
                 return
             suck = await ubot.get_messages(JULIASONG, limit=None)
             for c in suck:
-                if not isinstance(c.message, types.MessageService):
-                    if c.media != None:
-                        name = c.media.document.attributes[0].title
-                        if str(name) == songname:
-                            os.system("rm -rf *.mp3")
-                            os.system("rm -rf *.webp")
-                            return
+                if (
+                    not isinstance(c.message, types.MessageService)
+                    and c.media != None
+                ):
+                    name = c.media.document.attributes[0].title
+                    if str(name) == songname:
+                        os.system("rm -rf *.mp3")
+                        os.system("rm -rf *.webp")
+                        return
             await y.forward_to(JULIASONG)
             os.system("rm -rf *.mp3")
             os.system("rm -rf *.webp")
@@ -193,9 +191,7 @@ async def download_video(v_url):
     if v_url.is_group:
         if await is_register_admin(v_url.input_chat, v_url.message.sender_id):
             pass
-        elif v_url.chat_id == iid and v_url.sender_id == userss:
-            pass
-        else:
+        elif v_url.chat_id != iid or v_url.sender_id != userss:
             return
     url = v_url.pattern_match.group(1)
     rkp = await v_url.reply("`Processing ...`")
@@ -233,7 +229,7 @@ async def download_video(v_url):
         with YoutubeDL(opts) as rip:
             rip_data = rip.extract_info(url)
     except DownloadError as DE:
-        await rkp.edit(f"`{str(DE)}`")
+        await rkp.edit(f'`{DE}`')
         return
     except ContentTooShortError:
         await rkp.edit("`The download content was too short.`")
@@ -259,11 +255,11 @@ async def download_video(v_url):
         await rkp.edit("`There was an error during info extraction.`")
         return
     except Exception as e:
-        await rkp.edit(f"{str(type(e)): {str(e)}}")
+        await rkp.edit(f'{str(type(e)): {e}}')
         return
-    c_time = time.time()
     if video:
-        await rkp.edit(f"`Sending the video song ...`")
+        c_time = time.time()
+        await rkp.edit('`Sending the video song ...`')
 
         y = await v_url.client.send_file(
             v_url.chat_id,
@@ -272,9 +268,7 @@ async def download_video(v_url):
             caption=rip_data["title"],
         )
         vsongname = str(rip_data["title"])
-        if JULIAVSONG:
-            pass
-        else:
+        if not JULIAVSONG:
             os.system("rm -rf *.mp4")
             os.system("rm -rf *.webp")
             os.system("rm -rf *.jpg")
@@ -303,16 +297,13 @@ async def download_lyrics(v_url):
     if v_url.is_group:
         if await is_register_admin(v_url.input_chat, v_url.message.sender_id):
             pass
-        elif v_url.chat_id == iid and v_url.sender_id == userss:
-            pass
-        else:
+        elif v_url.chat_id != iid or v_url.sender_id != userss:
             return
     query = v_url.pattern_match.group(1)
     if not query:
         await v_url.reply("You haven't specified which song to look for!")
         return
-    song = Song.find_song(query)
-    if song:
+    if song := Song.find_song(query):
         if song.lyrics:
             reply = song.format()
         else:

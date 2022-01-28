@@ -61,9 +61,7 @@ async def _(event):
             if event.sender_id == c["user"]:
                 addr = get_email(event.sender_id)
                 ttime = addr["time"]
-                if (
-                    not int(((datetime.now() - ttime)).total_seconds()) > 86400
-                ):  # 24 hrs
+                if int(((datetime.now() - ttime)).total_seconds()) <= 86400:  # 24 hrs
                     await event.reply(
                         "You have recently created a new email address, wait for 24hrs to change it"
                     )
@@ -174,7 +172,7 @@ async def _(event):
     sender = int(sender.strip())
     chatid = int(chatid.strip())
     msgid = int(msgid.strip())
-    if not event.sender_id == sender:
+    if event.sender_id != sender:
         await event.answer("You haven't send that command !")
         return
     await tbot.edit_message(chatid, msgid, "Thanks for using Julia ♥️")
@@ -191,7 +189,7 @@ async def _(event):
     if "|" in meta:
         sender, index, chatid, msgid = meta.split("|")
     sender = int(sender.strip())
-    if not event.sender_id == sender:
+    if event.sender_id != sender:
         await event.answer("You haven't send that command !")
         return
     index = int(index.strip())
@@ -230,7 +228,7 @@ async def _(event):
 
     tlink = "https://telegra.ph/{}".format(response["path"])
 
-    if not attch > 0:
+    if attch <= 0:
         lastisthis = (
             f"{header}MAIL FROM: {from_mail}"
             + "\n"
@@ -300,7 +298,7 @@ async def _(event):
     if "|" in meta:
         sender, index, chatid, msgid = meta.split("|")
     sender = int(sender.strip())
-    if not event.sender_id == sender:
+    if event.sender_id != sender:
         await event.answer("You haven't send that command !")
         return
 
@@ -317,8 +315,8 @@ async def _(event):
             if value == "There are no emails yet":
                 await tbot.edit_message(chatid, msgid, "There are no emails yet.")
                 return
-    vector = len(mails)
     if num < 0:
+        vector = len(mails)
         num = vector - 1
     # print(vector)
     # print(num)
@@ -346,7 +344,7 @@ async def _(event):
     response = telegraph.create_page(subject, html_content=final)
 
     tlink = "https://telegra.ph/{}".format(response["path"])
-    if not attch > 0:
+    if attch <= 0:
         lastisthis = (
             f"{header}MAIL FROM: {from_mail}"
             + "\n"

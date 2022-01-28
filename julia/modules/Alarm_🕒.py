@@ -56,9 +56,7 @@ async def _(event):
     if event.is_group:
         if await is_register_admin(event.input_chat, event.message.sender_id):
             pass
-        elif event.chat_id == iid and event.sender_id == userss:
-            pass
-        else:
+        elif event.chat_id != iid or event.sender_id != userss:
             return
     quew = event.pattern_match.group(1)
     if "|" in quew:
@@ -72,13 +70,14 @@ async def _(event):
     ttime = dateparser.parse(
         f"{time}", settings={"TIMEZONE": f"{zone}", "DATE_ORDER": "DMY"}
     )
-    if ttime == None:
+    if ttime is None:
         await event.reply("Please enter valid date and time and zone.")
         return
     time = ttime  # exchange
     present = dateparser.parse(
-        f"now", settings={"TIMEZONE": f"{zone}", "DATE_ORDER": "YMD"}
+        'now', settings={"TIMEZONE": f"{zone}", "DATE_ORDER": "YMD"}
     )
+
     # print(time)
     # print(present)
     if not time > present:
@@ -138,8 +137,9 @@ async def tikclock(event):
         zone = c["zone"]
         reason = c["reason"]
         present = dateparser.parse(
-            f"now", settings={"TIMEZONE": f"{zone}", "DATE_ORDER": "YMD"}
+            'now', settings={"TIMEZONE": f"{zone}", "DATE_ORDER": "YMD"}
         )
+
         ttime = dateparser.parse(f"{time}", settings={"TIMEZONE": f"{zone}"})
         if present > ttime:
             await tbot.send_message(
@@ -156,7 +156,6 @@ async def tikclock(event):
                 }
             )
             break
-            return
         continue
 
 

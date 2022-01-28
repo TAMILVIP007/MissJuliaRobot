@@ -51,12 +51,11 @@ async def can_change_info(message):
 
 @register(pattern="^/addchat$")
 async def _(event):
-    if event.is_group:
-        if not await can_change_info(message=event):
-            return
-    else:
+    if not event.is_group:
         return
 
+    if not await can_change_info(message=event):
+        return
     global api_client
     chat = event.chat
     send = await event.get_sender()
@@ -75,10 +74,9 @@ async def _(event):
 
 @register(pattern="^/rmchat$")
 async def _(event):
-    if event.is_group:
-        if not await can_change_info(message=event):
-            return
-    else:
+    if not event.is_group:
+        return
+    if not await can_change_info(message=event):
         return
     chat = event.chat
     send = await event.get_sender()
@@ -93,26 +91,21 @@ async def _(event):
 
 @tbot.on(events.NewMessage(pattern=None))
 async def check_message(event):
-    if event.is_group:
-        pass
-    else:
+    if not event.is_group:
         return
     message = str(event.text)
     reply_msg = await event.get_reply_message()
     if message.lower() == "julia":
         return True
-    if reply_msg:
-        if reply_msg.sender_id == BOT_ID:
-            return True
-    else:
+    if not reply_msg:
         return False
+    if reply_msg.sender_id == BOT_ID:
+        return True
 
 
 @tbot.on(events.NewMessage(pattern=None))
 async def _(event):
-    if event.is_group:
-        pass
-    else:
+    if not event.is_group:
         return
     global api_client
     msg = str(event.text)
